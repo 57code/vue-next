@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    <h1>vue3初始化流程</h1>
+    <p>{{foo}}</p>
+  </div>
+
+  <script src="../../dist/vue.global.js"></script>
+  <script>
+    const { createApp, h } = Vue
+
+    createApp({
+      data() {
+        return {
+          foo: 'hello, vue3!'
+        }
+      },
+      mounted(){
+        setTimeout(() => {
+          this.foo = 'vue3 hello!'
+        }, 1000);
+      }
+    }).mount('#app')
+  </script>
+</body>
+
+</html>
