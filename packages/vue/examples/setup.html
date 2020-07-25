@@ -1,0 +1,23 @@
+<div id="app">
+  <h1>setup</h1>
+  <p>{{foo}}</p>
+</div>
+
+<script src="../dist/vue.global.js"></script>
+<script>
+  const { createApp, ref, h } = Vue
+  createApp({
+    setup() {
+      const foo = ref('hello, world!')
+      // 返回一个上下文对象
+      return { foo }
+      // 返回一个渲染函数
+      // return () => {
+      //   return h('div', {id: 'app'}, [
+      //     h('h1', 'setup'),
+      //     h('p', foo.value)
+      //   ])
+      // }
+    }
+  }).mount('#app')
+</script>

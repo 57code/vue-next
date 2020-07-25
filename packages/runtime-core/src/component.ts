@@ -476,13 +476,16 @@ function setupStatefulComponent(
     exposePropsOnRenderContext(instance)
   }
   // 2. call setup()
+  // 判断是否存在setup
   const { setup } = Component
   if (setup) {
+    // 为组件实例创建一个独立的上下文
     const setupContext = (instance.setupContext =
       setup.length > 1 ? createSetupContext(instance) : null)
 
     currentInstance = instance
     pauseTracking()
+    // 调用setup(props, {attrs, emit, slots})
     const setupResult = callWithErrorHandling(
       setup,
       instance,
@@ -492,6 +495,7 @@ function setupStatefulComponent(
     resetTracking()
     currentInstance = null
 
+    // 返回结果如果是Promise实例
     if (isPromise(setupResult)) {
       if (isSSR) {
         // return the promise so server-renderer can wait on it
@@ -501,6 +505,7 @@ function setupStatefulComponent(
       } else if (__FEATURE_SUSPENSE__) {
         // async setup returned Promise.
         // bail here and wait for re-entry.
+        // 如果支持suspense
         instance.asyncDep = setupResult
       } else if (__DEV__) {
         warn(
@@ -509,6 +514,7 @@ function setupStatefulComponent(
         )
       }
     } else {
+      // 处理同步的结果
       handleSetupResult(instance, setupResult, isSSR)
     }
   } else {
@@ -521,6 +527,7 @@ export function handleSetupResult(
   setupResult: unknown,
   isSSR: boolean
 ) {
+  // setupResult如果是函数：则该函数就是一个用户指定渲染函数，返回一个虚拟dom即可
   if (isFunction(setupResult)) {
     // setup returned an inline render function
     instance.render = setupResult as InternalRenderFunction
@@ -533,6 +540,7 @@ export function handleSetupResult(
     }
     // setup returned bindings.
     // assuming a render function compiled from template is present.
+    // 将返回的对象做响应式处理
     instance.setupState = reactive(setupResult)
     if (__DEV__) {
       exposeSetupStateOnRenderContext(instance)
@@ -544,6 +552,7 @@ export function handleSetupResult(
       }`
     )
   }
+  // 处理options选项
   finishComponentSetup(instance, isSSR)
 }
 
