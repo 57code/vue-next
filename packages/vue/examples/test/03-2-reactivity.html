@@ -10,21 +10,30 @@
 <body>
   <div id="app">
     <h1>setup()如何生效</h1>
-    <p>{{foo}}</p>
+    <p @click="add">{{counter}}</p>
+    <p>{{doubleCouter}}</p>
   </div>
 
   <script src="../../dist/vue.global.js"></script>
   <script>
-    const { createApp, h, ref } = Vue
+    const { createApp, reactive, computed, toRefs,ref,isRef } = Vue
 
-    createApp({
+    const app = createApp({
       setup() {
-        const foo = ref('hello, vue3!')
+        const data = reactive({
+          counter: ref(0),
+          doubleCouter: computed(() => data.counter * 2)
+        })
         
-        return { foo }
+        const add = () => {
+          console.log(isRef(data.counter));
+          
+          data.counter++
+        }
+        
+        return { ...toRefs(data), add }
       },
     }).mount('#app')
   </script>
 </body>
-
 </html>

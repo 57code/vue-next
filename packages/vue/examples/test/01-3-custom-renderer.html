@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <script src="../../dist/vue.global.js"></script>
+  <script>
+    const { h, createRenderer, ref } = Vue
+
+    // 创建一个渲染器，给它提供节点和属性操作
+    let ctx, canvas
+    const nodeOps = {
+      createElement: (tag, isSVG, is) => {
+        if (tag === 'canvas') {
+          canvas = document.createElement('canvas')
+          canvas.style.border = '1px solid black'
+          ctx = canvas.getContext('2d')
+          return canvas
+        }
+        return { tag }
+      },
+      insert: (child, parent, anchor) => {
+        if (!child.nodeType) {
+          // 内部子元素，把它们存放在parent里面
+          parent.elements = parent.element || []
+          parent.elements.push(child)
+        } else {
+          // 追加画布
+          parent.appendChild(child)
+          // 绘制
+          draw()
+        }
+      },
+      parentNode: node => node.parentNode,
+      nextSibling: node => node.nextSibling,
+    }
+    const patchProp = (el, key, prevValue, nextValue) => {
+      // 构建元素的属性
+      el[key] = nextValue
+      if (prevValue) {
+        draw()
+      }
+    }
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      // 绘制elements内容
+      canvas.elements.forEach(element => {
+        if (element.tag === 'rect') {
+          const { x, y, width, height } = element
+          ctx.fillRect(x, y, width, height)
+        }
+      });
+    }
+    const renderer = createRenderer({
+      ...nodeOps,
+      patchProp,
+    });
+
+    const vm = renderer.createApp({
+      setup() {
+        const x = ref(0)
+        const y = ref(0)
+        setInterval(() => {
+          x.value = Math.round(Math.random() * 300)
+          y.value = Math.round(Math.random() * 200)
+        }, 1000);
+        return { x, y }
+      },
+      render(ctx) {
+        const vnode = h('canvas', { width: 400, height: 300 }, [
+          h('rect', { width: 100, height: 100, x: ctx.x, y: ctx.y })
+        ])
+        return vnode
+      }
+    }).mount(app)
+
+
+  </script>
+</body>
+
+</html>
