@@ -28,15 +28,6 @@
   "gitHooks": {
     "pre-commit": "ls-lint && lint-staged"
   },
-  "lint-staged": {
-    "*.js": [
-      "prettier --write"
-    ],
-    "*.ts?(x)": [
-      "eslint",
-      "prettier --parser=typescript --write"
-    ]
-  },
   "engines": {
     "node": ">=10.0.0"
   },
