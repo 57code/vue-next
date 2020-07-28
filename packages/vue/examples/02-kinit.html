@@ -1,0 +1,75 @@
+<div id="app"></div>
+
+<script src="../dist/vue.global.js"></script>
+<script>
+
+  // createAppAPI可以获取createApp
+  const createAppAPI = (render) => {
+    return function createApp(rootComponent) {
+      const app = {
+        mount(rootContainer) {
+          // 做什么？
+          // 1.vnode描述视图
+          const vnode = {
+            tag: 'h2',
+            props: { class: 'title' },
+            children: rootComponent.data().foo
+          }
+
+          // 2.渲染到容器
+          render(vnode, rootContainer)
+
+        }
+      }
+      return app
+    }
+  }
+
+  // createRenderer方法
+  const createRenderer = (options) => {
+    // 。。。。
+
+    const render = (vnode, container) => {
+      // 把传入vnode变成dom，追加到container
+      // 1.获取父元素，querySelector
+      const parent = options.querySelector(container)
+
+      // 2.创建元素， createElement
+      const child = options.createElement(vnode.tag)
+      if (typeof vnode.children === 'string') {
+        child.textContent = vnode.children
+      }
+
+      // 3.追加，insert
+      options.insert(child, parent)
+
+    }
+
+    return {
+      render,
+      createApp: createAppAPI(render)
+    }
+  }
+
+  // 需要一个渲染器:参数是各种平台节点或属性操作
+  const renderer = createRenderer({
+    querySelector(sel) {
+      return document.querySelector(sel)
+    },
+    createElement(tag){
+      return document.createElement(tag)
+    },
+    insert(child, parent) {
+      parent.appendChild(child)
+    }
+  })
+
+  // 获取createApp，来自于渲染器实例
+  renderer.createApp({
+    data() {
+      return {
+        foo: 'foo'
+      }
+    }
+  }).mount('#app')
+</script>

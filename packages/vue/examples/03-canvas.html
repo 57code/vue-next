@@ -1,0 +1,66 @@
+<div id="app">
+  <h2>canvas renderer</h2>
+</div>
+
+<script src="../dist/vue.global.js"></script>
+<script>
+  const { createApp, createRenderer, h } = Vue
+
+  let canvas, ctx
+
+  // 创建渲染器
+  const nodeOps = {
+    createElement(tag) {
+      // 需要创建的只有canvas
+      if (tag === 'canvas') {
+        canvas = document.createElement('canvas')
+        canvas.style.border = '1px solid black'
+        ctx = canvas.getContext('2d')
+        return canvas
+      }
+      return { tag }
+    },
+    insert(child, parent) {
+      if (!child.nodeType) {
+        // 子元素 比如rect
+        parent.elements = parent.elements || []
+        parent.elements.push(child)
+      } else {
+        // canvas
+        // 追加画布
+        parent.appendChild(child)
+        // 画图
+        draw()
+      }
+    }
+  }
+  const patchProp = (el, key, prevValue, nextValue) => {
+    el[key] = nextValue
+  }
+  const renderer = createRenderer({
+    ...nodeOps,
+    patchProp
+  })
+
+  const draw = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    // 绘制
+    canvas.elements.forEach(element => {
+      if (element.tag === 'rect') {
+        const { x, y, width, height } = element
+        ctx.fillRect(x, y, width, height)
+      }
+    })
+  }
+
+  renderer.createApp({
+    render() {
+      // <canvas><rect>...
+      const vnode = h('canvas', { width: 400, height: 300 }, [
+        h('rect', { width: 100, height: 100, x: 0, y: 0 })
+      ])
+      return vnode
+    }
+  }).mount(app)
+</script>

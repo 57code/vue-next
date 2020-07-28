@@ -105,6 +105,7 @@ export type CreateAppFunction<HostElement> = (
   rootProps?: Data | null
 ) => App<HostElement>
 
+// 返回createApp函数的
 export function createAppAPI<HostElement>(
   render: RootRenderFunction,
   hydrate?: RootHydrateFunction
@@ -120,6 +121,7 @@ export function createAppAPI<HostElement>(
 
     let isMounted = false
 
+    // vue实例对象
     const app: App = {
       _component: rootComponent as Component,
       _props: rootProps,
@@ -218,6 +220,7 @@ export function createAppAPI<HostElement>(
           if (isHydrate && hydrate) {
             hydrate(vnode as VNode<Node, Element>, rootContainer as any)
           } else {
+            // 调用外面传入render函数，将vnode渲染到根容器上
             render(vnode, rootContainer)
           }
           isMounted = true

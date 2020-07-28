@@ -432,11 +432,13 @@ export function setupComponent(
 ) {
   isInSSRComponentSetup = isSSR
 
+  // 获取组件属性和孩子
   const { props, children, shapeFlag } = instance.vnode
   const isStateful = shapeFlag & ShapeFlags.STATEFUL_COMPONENT
   initProps(instance, props, isStateful, isSSR)
   initSlots(instance, children)
 
+  // 安装状态组件
   const setupResult = isStateful
     ? setupStatefulComponent(instance, isSSR)
     : undefined
@@ -448,6 +450,7 @@ function setupStatefulComponent(
   instance: ComponentInternalInstance,
   isSSR: boolean
 ) {
+  // 组件选项
   const Component = instance.type as ComponentOptions
 
   if (__DEV__) {
@@ -476,6 +479,7 @@ function setupStatefulComponent(
     exposePropsOnRenderContext(instance)
   }
   // 2. call setup()
+  // composition-api初始化
   const { setup } = Component
   if (setup) {
     const setupContext = (instance.setupContext =
@@ -621,6 +625,7 @@ function finishComponentSetup(
   }
 
   // support for 2.x options
+  // 兼容vue2版本
   if (__FEATURE_OPTIONS__) {
     currentInstance = instance
     applyOptions(instance, Component)

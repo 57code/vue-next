@@ -1,0 +1,24 @@
+<div id="app">
+  <h2>init</h2>
+  <p>{{foo}}</p>
+</div>
+
+<script src="../dist/vue.global.js"></script>
+<script>
+  const { createApp, ref } = Vue
+
+  // vue2: new Vue()
+  // vue3: createApp()
+
+  createApp({
+    data() {
+      return {
+        foo: 'foo'
+      }
+    },
+    setup() {
+      const bar = ref('bar')
+      return { bar }
+    }
+  }).mount('#app')
+</script>
