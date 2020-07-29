@@ -1,0 +1,26 @@
+<div id="app">
+  <h1>reactive</h1>
+  <p @click="add">{{counter}}</p>
+</div>
+
+<script src="../dist/vue.global.js"></script>
+<script>
+  const {createApp, reactive, toRefs} = Vue
+
+  // 创建一个实例
+  createApp({
+    setup() {
+      // composition-api
+      // 返回一个Proxy实例
+      const data = reactive({
+        counter: 0
+      })
+
+      function add() {
+        data.counter++
+      }
+
+      return {...toRefs(data), add}
+    }
+  }).mount('#app')
+</script>

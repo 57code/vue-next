@@ -1,0 +1,26 @@
+<div id="app">
+</div>
+
+<script src="05-reactive-02.js"></script>
+<script>
+
+  // 原始数据
+  const obj2 = {
+    name: 'kkb',
+    age: 8
+  }
+
+  // 代理
+  const data = reactive(obj2)
+  // const double = computed(() => data.age * 2)
+  effect(() => {
+    app.innerHTML = `
+      <h1>${data.name}今年${data.age}岁了</h1>
+      `
+      // <p>再过乘以2之后是${double.value}年</p>
+  })
+  
+  setInterval(() => {
+    data.age++
+  }, 1000);
+</script>
