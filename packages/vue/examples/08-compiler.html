@@ -1,0 +1,21 @@
+<div id="app">
+  <h1>{{msg}}</h1>
+</div>
+
+<script src="../dist/vue.global.js"></script>
+<script>
+  const {createApp, reactive, toRefs} = Vue
+
+  // 创建一个实例
+  const app = createApp({
+    data() {
+      return {
+        msg: 'hello vue3'
+      }
+    }
+  }).mount('#app')
+
+  // 输出渲染函数
+  console.log(app.$options.render);
+  
+</script>
