@@ -1,0 +1,13 @@
+<div id="app"></div>
+<script src="04-reactivity.js"></script>
+<script>
+  effect(() => {
+    document.querySelector('#app').innerHTML = proxy.foo
+  })
+  console.log(targetMap);
+  
+
+  setTimeout(() => {
+    proxy.foo = 'lalalalal'
+  }, 2000);
+</script>
