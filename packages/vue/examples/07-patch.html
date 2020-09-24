@@ -1,0 +1,128 @@
+<div id="app"></div>
+<script src="04-reactivity.js"></script>
+<script>
+  // 实现createApp工厂函数
+  function createAppAPI(render) {
+    return function createApp(rootComponent) {
+      const app = {
+        mount(rootContainer) {
+          app.proxy = reactive(rootComponent.data())
+          effect(() => {
+            const vnode = rootComponent.render.call(app.proxy)
+            render(vnode, rootContainer)
+          })
+
+          return app
+        }
+      }
+      return app
+    }
+  }
+
+  // 创建renderer
+  const createRenderer = (options) => {
+    // 作用：转换node，追加到宿主元素
+    const render = (vnode, container) => {
+      // 宿主
+      container = options.querySelector(container)
+      // 判断初始化还是更新
+      if (!container._vnode) {
+        mount(vnode, container)
+      } else {
+        patch(container._vnode, vnode, container)
+      }
+
+    }
+    const mount = (vnode, container) => {
+      const el = document.createElement(vnode.tag)
+      // props, 略
+      // children
+      if (vnode.children) {
+        //text
+        if (typeof vnode.children === 'string') {
+          el.textContent = vnode.children
+        } else {
+          // children
+          vnode.children.forEach(child => mount(child, el))
+        }
+      }
+
+      container.appendChild(el)
+      vnode.el = el
+      container._vnode = vnode
+
+    }
+
+    const patch = (n1, n2, container) => {
+      const el = n2.el = n1.el
+      if (n1.tag === n2.tag) {
+        const oldChildren = n1.children
+        const newChildren = n2.children
+        if (typeof newChildren === 'string') {
+          if (typeof oldChildren === 'string') {
+            // 文本更新
+            if (newChildren !== oldChildren) {
+              el.textContent = newChildren
+            } 
+          } else {
+            // 清空，设置为文本
+            el.textContent = newChildren
+          }
+        } else {
+          // children
+
+        }
+      } else {
+        // replacement
+      }
+
+      container._vnode = n2
+    }
+
+    return {
+      render,
+      createApp: createAppAPI(render)
+    }
+  }
+  // 参数是特定平台节点操作方法和属性操作方法
+  const renderer = createRenderer({
+    querySelector(selector) {
+      return document.querySelector(selector)
+    },
+    createElement(tag) {
+      return document.createElement(tag)
+    },
+    insert(child, parent) {
+      parent.appendChild(child)
+    }
+  })
+
+  const Vue = {
+    createApp(options) {
+      // app实例来自于renderer.createApp(options)
+      return renderer.createApp(options)
+    }
+  }
+
+  // 返回vnode
+  function h(tag, props, children) {
+    return { tag, props, children }
+  }
+
+  // 创建app实例
+  const app = Vue.createApp({
+    data() {
+      return {
+        title: 'hello, vue3!'
+      }
+    },
+    render() {
+      return h('div', null, this.title)
+    }
+  })
+    .mount("#app")
+
+  setInterval(() => {
+    app.proxy.title = app.proxy.title.split('').reverse().join('')
+  }, 1000);
+</script>

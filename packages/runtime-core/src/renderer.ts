@@ -554,6 +554,7 @@ function baseCreateRenderer(
 
   const processText: ProcessTextOrCommentFn = (n1, n2, container, anchor) => {
     if (n1 == null) {
+      // 创建文本
       hostInsert(
         (n2.el = hostCreateText(n2.children as string)),
         container,
